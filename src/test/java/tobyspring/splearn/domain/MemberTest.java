@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.util.Assert.isInstanceOf;
 
 class MemberTest {
     Member member;
@@ -104,5 +105,14 @@ class MemberTest {
         member.deactivate();
 
         assertThat(member.isActive()).isFalse();
+    }
+    
+    @Test
+    void invalidEmail() {
+        assertThatThrownBy(() ->
+            member.create(new MemberCreateRequest("invalid email", "Toby", "secret"), passwordEncoder)
+        ).isInstanceOf(IllegalArgumentException.class);
+
+        member.create(new MemberCreateRequest("abc@gmail.com", "Toby", "secret"), passwordEncoder);
     }
 }
