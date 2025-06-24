@@ -1,31 +1,39 @@
 package tobyspring.splearn.domain;
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.util.regex.Pattern;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
 
 import static java.util.Objects.*;
 import static org.springframework.util.Assert.state;
 
+@Entity
 @Getter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 생성자를 사용하지 못하도록 protected로 변경.
+@NaturalIdCache
 public class Member {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Embedded
+    @NaturalId // 중복된 값이 저장되는 것을 허용하지 않음.
     private Email email;
 
     private String nickname;
 
     private String passwordHash;
 
+    @Enumerated
     private MemberStatus status;
-
-    // 생성자를 사용하지 못하도록 private으로 변경.
-    private Member() {
-    }
 
     // 생성자를 사용하지 않고 record를 사용하여 member에 새로운 속성이 추가되더라도 파라미터 길이가 길어지지 않음.
     // 코드 리뷰할 때 빠르고 직관적으로 체크가 가능함.
-    public static Member create(MemberCreateRequest createRequest, PasswordEncoder passwordEncoder) {
+    public static Member register(MemberRegisterRequest createRequest, PasswordEncoder passwordEncoder) {
         Member member = new Member();
 
         member.email = new Email(createRequest.email());

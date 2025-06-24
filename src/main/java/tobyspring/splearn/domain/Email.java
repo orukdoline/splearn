@@ -1,7 +1,10 @@
 package tobyspring.splearn.domain;
 
+import jakarta.persistence.Embeddable;
+
 import java.util.regex.Pattern;
 
+@Embeddable
 public record Email(String address) {
 
     // 정규식 표현을 사용해서 사용자가 이메일 형식으로 입력했는지 체크.
